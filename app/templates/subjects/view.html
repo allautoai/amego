@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}{{ subject.name }} - StudyAmego{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="d-flex align-items-center mb-2">
+        <a href="{{ url_for('subjects.list_subjects') }}" class="btn btn-link text-decoration-none text-muted p-0 me-3">
+            <i class="bi bi-arrow-left fs-4"></i>
+        </a>
+        <h2 class="fw-bold m-0 d-flex align-items-center">
+            <span class="d-inline-block rounded-circle me-2" style="width: 16px; height: 16px; background-color: {{ subject.color }};"></span>
+            {{ subject.name }}
+        </h2>
+        
+        <div class="dropdown ms-auto">
+            <button class="btn btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-gear me-1"></i> Opciones
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{{ url_for('subjects.edit_subject', id=subject.id) }}"><i class="bi bi-pencil me-2"></i>Editar</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <form action="{{ url_for('subjects.delete_subject', id=subject.id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta asignatura y todos sus mazos?');">
+                        <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Eliminar</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+    {% if subject.description %}
+    <p class="text-muted ms-5">{{ subject.description }}</p>
+    {% endif %}
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold m-0">Mazos</h4>
+    <a href="{{ url_for('decks.new_deck', id=subject.id) }}" class="btn btn-sm btn-primary">
+        <i class="bi bi-plus-lg me-1"></i> Nuevo Mazo
+    </a>
+</div>
+
+{% if subject.decks %}
+<div class="row g-4">
+    {% for deck in subject.decks %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title fw-bold mb-0 text-truncate">{{ deck.name }}</h5>
+                </div>
+                <p class="text-muted small mb-3 text-truncate">{{ deck.description or 'Sin descripción' }}</p>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge bg-light text-dark border"><i class="bi bi-card-text me-1"></i> {{ deck.flashcards|length }} Cartas</span>
+                    {% if deck.last_studied_at %}
+                    <small class="text-muted">Estudiado: {{ deck.last_studied_at.strftime('%d/%m') }}</small>
+                    {% else %}
+                    <small class="text-muted">Nunca estudiado</small>
+                    {% endif %}
+                </div>
+                <a href="{{ url_for('decks.view_deck', id=deck.id) }}" class="btn btn-outline-primary w-100 stretched-link">
+                    Abrir Mazo
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card p-5 text-center bg-light border-dashed">
+    <div class="text-muted mb-3"><i class="bi bi-collection fs-1"></i></div>
+    <h5>Esta asignatura no tiene mazos</h5>
+    <p class="text-muted">Crea un mazo para empezar a añadir y generar flashcards.</p>
+</div>
+{% endif %}
+{% endblock %}

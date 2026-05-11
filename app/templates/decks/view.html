@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}{{ deck.name }} - StudyAmego{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="d-flex align-items-center mb-2">
+        <a href="{{ url_for('subjects.view_subject', id=deck.subject_id) }}" class="btn btn-link text-decoration-none text-muted p-0 me-3" title="Volver a {{ deck.subject.name }}">
+            <i class="bi bi-arrow-left fs-4"></i>
+        </a>
+        <h2 class="fw-bold m-0">{{ deck.name }}</h2>
+        
+        <div class="dropdown ms-auto">
+            <button class="btn btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-gear me-1"></i> Opciones
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{{ url_for('decks.edit_deck', id=deck.id) }}"><i class="bi bi-pencil me-2"></i>Editar Mazo</a></li>
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#moveModal"><i class="bi bi-folder-symlink me-2"></i>Mover de Asignatura</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <form action="{{ url_for('decks.delete_deck', id=deck.id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este mazo y todas sus cartas?');">
+                        <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Eliminar</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+    {% if deck.description %}
+    <p class="text-muted ms-5">{{ deck.description }}</p>
+    {% endif %}
+    
+    <div class="ms-5 mt-3 d-flex gap-2">
+        {% if deck.flashcards %}
+        <a href="{{ url_for('study.mode_selection', deck_id=deck.id) }}" class="btn btn-primary">
+            <i class="bi bi-play-fill me-1"></i> Estudiar Mazo
+        </a>
+        {% endif %}
+        <a href="{{ url_for('generate.generate_index', id=deck.id) }}" class="btn btn-outline-primary">
+            <i class="bi bi-magic me-1"></i> Generar con IA
+        </a>
+        <a href="{{ url_for('flashcards.new_flashcard', id=deck.id) }}" class="btn btn-outline-secondary">
+            <i class="bi bi-plus-lg me-1"></i> Añadir Carta Manual
+        </a>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold m-0">Flashcards ({{ deck.flashcards|length }})</h4>
+</div>
+
+{% if deck.flashcards %}
+<div class="row g-3">
+    {% for card in deck.flashcards|sort(attribute='order_index') %}
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-5">
+                        <p class="mb-0 fw-semibold">{{ card.question }}</p>
+                    </div>
+                    <div class="col-md-5">
+                        <p class="mb-0 text-muted">{{ card.answer }}</p>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <a href="{{ url_for('flashcards.edit_flashcard', id=card.id) }}" class="btn btn-sm btn-light border" title="Editar"><i class="bi bi-pencil"></i></a>
+                        <form action="{{ url_for('flashcards.delete_flashcard', id=card.id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Eliminar esta carta?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card p-5 text-center bg-light border-dashed">
+    <div class="text-muted mb-3"><i class="bi bi-card-text fs-1"></i></div>
+    <h5>Este mazo está vacío</h5>
+    <p class="text-muted">Genera flashcards automáticamente con IA o añádelas manualmente.</p>
+</div>
+{% endif %}
+
+<!-- Modal para Mover Mazo -->
+{% if move_form %}
+<div class="modal fade" id="moveModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ url_for('decks.move_deck', id=deck.id) }}" method="POST">
+                {{ move_form.hidden_tag() }}
+                <div class="modal-header">
+                    <h5 class="modal-title">Mover Mazo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        {{ move_form.subject_id.label(class="form-label fw-semibold") }}
+                        {{ move_form.subject_id(class="form-select") }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    {{ move_form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

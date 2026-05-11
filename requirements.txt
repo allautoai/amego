@@ -1,0 +1,10 @@
+flask
+flask-login
+flask-sqlalchemy
+flask-wtf
+wtforms
+google-generativeai
+werkzeug
+pymupdf
+email-validator
+python-dotenv

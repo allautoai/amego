@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Historial de Sesiones - StudyAmego{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-4">
+    <a href="{{ url_for('progress.index') }}" class="btn btn-link text-decoration-none text-muted p-0 me-3">
+        <i class="bi bi-arrow-left fs-4"></i>
+    </a>
+    <h2 class="fw-bold m-0 premium-gradient">Historial de Sesiones</h2>
+</div>
+
+<div class="card">
+    <div class="list-group list-group-flush">
+        {% for session in pagination.items %}
+        <a href="{{ url_for('progress.session_detail', session_id=session.id) }}" class="list-group-item list-group-item-action p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="fw-bold mb-1">{{ session.deck.subject.name }} - {{ session.deck.name }}</h6>
+                    <small class="text-muted">
+                        <i class="bi bi-calendar3 me-1"></i> {{ session.finished_at.strftime('%d/%m/%Y %H:%M') }}
+                        &bull; <i class="bi bi-clock me-1"></i> {{ session.duration_seconds // 60 }}m {{ session.duration_seconds % 60 }}s
+                    </small>
+                </div>
+                <div class="text-end">
+                    {% set pct = 0 %}
+                    {% if session.total_cards > 0 %}
+                        {% set pct = (session.correct_count / session.total_cards * 100)|int %}
+                    {% endif %}
+                    <div class="fs-5 fw-bold {% if pct >= 80 %}text-success{% elif pct >= 50 %}text-primary{% else %}text-warning{% endif %}">
+                        {{ pct }}%
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% else %}
+        <div class="list-group-item p-5 text-center text-muted">
+            <i class="bi bi-journal-x fs-1 mb-2 d-block"></i>
+            Aún no hay historial de sesiones.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% if pagination.pages > 1 %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('progress.history', page=pagination.prev_num) if pagination.has_prev else '#' }}">Anterior</a>
+        </li>
+        {% for p in pagination.iter_pages() %}
+            {% if p %}
+                <li class="page-item {% if p == pagination.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('progress.history', page=p) }}">{{ p }}</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+        <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('progress.history', page=pagination.next_num) if pagination.has_next else '#' }}">Siguiente</a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

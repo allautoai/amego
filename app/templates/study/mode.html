@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Estudiar - {{ deck.name }}{% endblock %}
+
+{% block content %}
+<div class="mb-5 text-center">
+    <a href="{{ url_for('decks.view_deck', id=deck.id) }}" class="btn btn-link text-decoration-none text-muted mb-3">
+        <i class="bi bi-arrow-left me-1"></i> Volver a {{ deck.name }}
+    </a>
+    <h1 class="fw-bold premium-gradient">¿Cómo quieres estudiar hoy?</h1>
+    <p class="text-muted">Elige un modo de estudio para el mazo <strong>{{ deck.name }}</strong></p>
+</div>
+
+<div class="row justify-content-center g-4">
+    <div class="col-md-5">
+        <a href="{{ url_for('study.start_flashcards', deck_id=deck.id) }}" class="text-decoration-none text-dark">
+            <div class="card h-100 text-center p-4 border-primary" style="border-width: 2px;">
+                <div class="card-body">
+                    <div class="display-4 text-primary mb-3"><i class="bi bi-layers"></i></div>
+                    <h3 class="fw-bold">Flashcards</h3>
+                    <p class="text-muted">Repasa las cartas una por una. Las que no recuerdes volverán a aparecer al final.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    
+    <div class="col-md-5">
+        <a href="{{ url_for('study.start_exam', deck_id=deck.id) }}" class="text-decoration-none text-dark">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <div class="display-4 text-muted mb-3"><i class="bi bi-stopwatch"></i></div>
+                    <h3 class="fw-bold">Modo Examen</h3>
+                    <p class="text-muted">Ponte a prueba con tiempo limitado y sin respuestas inmediatas. (Próximamente)</p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

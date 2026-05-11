@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Generar con IA - {{ deck.name }}{% endblock %}
+
+{% block content %}
+<div class="mb-4 d-flex align-items-center">
+    <a href="{{ url_for('decks.view_deck', id=deck.id) }}" class="btn btn-link text-decoration-none text-muted p-0 me-3">
+        <i class="bi bi-arrow-left fs-4"></i>
+    </a>
+    <h2 class="fw-bold m-0 premium-gradient">Generar con IA</h2>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-white pb-0 border-0 pt-4">
+                <h5 class="fw-bold"><i class="bi bi-filetype-pdf me-2 text-danger"></i>1. Extraer desde PDF</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small">Sube un archivo PDF (máx. 5MB) para extraer el texto automáticamente.</p>
+                <form action="{{ url_for('generate.upload_pdf', id=deck.id) }}" method="POST" enctype="multipart/form-data">
+                    {{ pdf_form.hidden_tag() }}
+                    <div class="input-group mb-3">
+                        {{ pdf_form.pdf(class="form-control") }}
+                        {{ pdf_form.submit(class="btn btn-outline-secondary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-12">
+        <div class="card border-primary mb-4" style="border-width: 2px;">
+            <div class="card-header bg-white pb-0 border-0 pt-4">
+                <h5 class="fw-bold text-primary"><i class="bi bi-magic me-2"></i>2. Generar Contenido</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Pega el texto aquí o extráelo de un PDF. Luego elige qué generar.</p>
+                <form method="POST" id="generateForm">
+                    {{ text_form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ text_form.text(class="form-control", rows="8", placeholder="Pega tus apuntes aquí (100 - 5000 caracteres)...") }}
+                        <div class="form-text d-flex justify-content-between">
+                            <span>Mínimo 100 caracteres.</span>
+                            <span id="charCount">0 / 5000</span>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" formaction="{{ url_for('generate.generate_flashcards_preview', id=deck.id) }}" class="btn btn-primary flex-grow-1 py-2">
+                            <i class="bi bi-card-text me-2"></i> Generar 5 Flashcards
+                        </button>
+                        <button type="submit" formaction="{{ url_for('generate.generate_quiz_preview', id=deck.id) }}" class="btn btn-primary flex-grow-1 py-2">
+                            <i class="bi bi-ui-checks-grid me-2"></i> Generar Quiz (3 Preguntas)
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const textArea = document.getElementById('text');
+        const charCount = document.getElementById('charCount');
+        
+        if (textArea && charCount) {
+            const updateCount = () => {
+                const len = textArea.value.length;
+                charCount.textContent = `${len} / 5000`;
+                if (len > 5000 || len < 100) {
+                    charCount.classList.add('text-danger');
+                } else {
+                    charCount.classList.remove('text-danger');
+                }
+            };
+            textArea.addEventListener('input', updateCount);
+            updateCount();
+        }
+    });
+</script>
+{% endblock %}

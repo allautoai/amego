@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Progreso - StudyAmego{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold m-0 premium-gradient">Tu Progreso</h2>
+    <p class="text-muted">Revisa tus estadísticas y sigue mejorando.</p>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card h-100 bg-primary text-white text-center p-4">
+            <div class="display-4 mb-2"><i class="bi bi-fire"></i></div>
+            <h2 class="fw-bold mb-0">{{ streak }} días</h2>
+            <p class="mb-0 opacity-75">Racha Actual</p>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card h-100">
+            <div class="card-header bg-white pt-4 pb-0 border-0">
+                <h5 class="fw-bold"><i class="bi bi-graph-up me-2"></i>Dominio por Asignatura (Últimos 7 días)</h5>
+            </div>
+            <div class="card-body">
+                {% if mastery_data %}
+                    {% for data in mastery_data %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="fw-semibold">{{ data.subject.name }}</span>
+                            <span>{{ data.mastery }}%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar" role="progressbar" style="width: {{ data.mastery }}%; background-color: {{ data.subject.color }};"></div>
+                        </div>
+                        <small class="text-muted">{{ data.sessions_count }} sesiones recientes</small>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted text-center py-4">No hay datos suficientes de los últimos 7 días. ¡Empieza a estudiar!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold m-0">Actividad Reciente</h4>
+    <a href="{{ url_for('progress.history') }}" class="btn btn-sm btn-outline-primary">Ver Historial Completo</a>
+</div>
+
+<div class="card">
+    <div class="list-group list-group-flush">
+        {% for session in recent_sessions %}
+        <div class="list-group-item p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="fw-bold mb-1">{{ session.deck.subject.name }} - {{ session.deck.name }}</h6>
+                    <small class="text-muted">
+                        <i class="bi bi-calendar3 me-1"></i> {{ session.finished_at.strftime('%d/%m/%Y %H:%M') }}
+                        &bull; <i class="bi bi-clock me-1"></i> {{ session.duration_seconds // 60 }}m {{ session.duration_seconds % 60 }}s
+                    </small>
+                </div>
+                <div class="text-end">
+                    {% set pct = 0 %}
+                    {% if session.total_cards > 0 %}
+                        {% set pct = (session.correct_count / session.total_cards * 100)|int %}
+                    {% endif %}
+                    <div class="fs-5 fw-bold {% if pct >= 80 %}text-success{% elif pct >= 50 %}text-primary{% else %}text-warning{% endif %}">
+                        {{ pct }}%
+                    </div>
+                    <small class="text-muted">{{ session.correct_count }}/{{ session.total_cards }} correctas</small>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="list-group-item p-5 text-center text-muted">
+            <i class="bi bi-clock-history fs-1 mb-2 d-block"></i>
+            Aún no has completado ninguna sesión de estudio.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

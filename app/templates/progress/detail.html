@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Detalle de Sesión - StudyAmego{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-4">
+    <a href="{{ url_for('progress.history') }}" class="btn btn-link text-decoration-none text-muted p-0 me-3">
+        <i class="bi bi-arrow-left fs-4"></i>
+    </a>
+    <div>
+        <h2 class="fw-bold m-0 premium-gradient">Detalle de Sesión</h2>
+        <p class="text-muted m-0">{{ session.deck.subject.name }} - {{ session.deck.name }}</p>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card bg-light text-center p-3 h-100">
+            <h3 class="fw-bold mb-0">{{ session.total_cards }}</h3>
+            <span class="text-muted small">Cartas</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-light text-center p-3 h-100 border-success" style="border-width: 2px;">
+            <h3 class="fw-bold text-success mb-0">{{ session.correct_count }}</h3>
+            <span class="text-muted small">Correctas</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-light text-center p-3 h-100 border-danger" style="border-width: 2px;">
+            <h3 class="fw-bold text-danger mb-0">{{ session.incorrect_count }}</h3>
+            <span class="text-muted small">Incorrectas</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-light text-center p-3 h-100">
+            <h3 class="fw-bold mb-0">{{ session.duration_seconds // 60 }}m {{ session.duration_seconds % 60 }}s</h3>
+            <span class="text-muted small">Tiempo</span>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-white fw-bold py-3">
+        Resultados por Carta
+    </div>
+    <ul class="list-group list-group-flush">
+        {% for result in results %}
+        <li class="list-group-item p-3">
+            <div class="d-flex align-items-start gap-3">
+                <div class="mt-1">
+                    {% if result.remembered %}
+                    <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                    {% else %}
+                    <i class="bi bi-x-circle-fill text-danger fs-5"></i>
+                    {% endif %}
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">{{ result.flashcard.question }}</h6>
+                    <p class="text-muted mb-0 small">{{ result.flashcard.answer }}</p>
+                </div>
+            </div>
+        </li>
+        {% else %}
+        <li class="list-group-item p-4 text-center text-muted">
+            No hay detalles de cartas para esta sesión.
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

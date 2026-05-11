@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - StudyAmego{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="fw-bold m-0 premium-gradient">Hola, {{ current_user.full_name }}</h1>
+        <p class="text-muted m-0">Aquí tienes un resumen de tus estudios.</p>
+    </div>
+    <a href="{{ url_for('subjects.new_subject') }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i> Nueva Asignatura
+    </a>
+</div>
+
+{% if stats %}
+<div class="row g-4">
+    {% for stat in stats %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100" style="border-top: 4px solid {{ stat.subject.color }};">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title fw-bold mb-0 text-truncate" title="{{ stat.subject.name }}">
+                        {{ stat.subject.name }}
+                    </h5>
+                    {% if stat.needs_review %}
+                    <span class="badge bg-danger">Necesita repaso</span>
+                    {% endif %}
+                </div>
+                <p class="text-muted small mb-3 text-truncate">{{ stat.subject.description or 'Sin descripción' }}</p>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge bg-light text-dark border"><i class="bi bi-collection me-1"></i> {{ stat.deck_count }} Mazos</span>
+                </div>
+                
+                <a href="{{ url_for('subjects.view_subject', id=stat.subject.id) }}" class="btn btn-outline-primary w-100 stretched-link">
+                    Ver Asignatura
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <div class="display-1 text-muted mb-3"><i class="bi bi-journal-plus"></i></div>
+    <h3>¡Aún no tienes asignaturas!</h3>
+    <p class="text-muted">Crea tu primera asignatura para empezar a organizar tus mazos de estudio.</p>
+    <a href="{{ url_for('subjects.new_subject') }}" class="btn btn-primary btn-lg mt-2">Crear Asignatura</a>
+</div>
+{% endif %}
+{% endblock %}

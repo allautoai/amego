@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Estudiando - {{ session.deck.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <a href="{{ url_for('study.finish_session', session_id=session.id) }}" class="btn btn-outline-danger btn-sm">
+        <i class="bi bi-x-lg me-1"></i> Terminar Sesión
+    </a>
+    <span class="text-muted fw-semibold">Carta {{ current }} de {{ total }}</span>
+</div>
+
+<div class="progress mb-5" style="height: 10px;">
+    <div class="progress-bar bg-primary" role="progressbar" style="width: {{ progress }}%;"></div>
+</div>
+
+<div class="flashcard-container mb-5">
+    <div class="flashcard">
+        <div class="flashcard-face">
+            <h3>{{ flashcard.question }}</h3>
+        </div>
+        <div class="flashcard-face flashcard-back">
+            <div>
+                <h5 class="text-muted mb-4 small">Respuesta</h5>
+                <h3>{{ flashcard.answer }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="study-controls text-center">
+    <p class="text-muted mb-3">¿Recordaste la respuesta?</p>
+    <form method="POST" class="d-flex justify-content-center gap-3">
+        <button type="submit" name="remembered" value="false" class="btn btn-danger btn-lg px-4">
+            <i class="bi bi-x-circle me-2"></i> No lo supe
+        </button>
+        <button type="submit" name="remembered" value="true" class="btn btn-success btn-lg px-4">
+            <i class="bi bi-check-circle me-2"></i> Lo supe
+        </button>
+    </form>
+</div>
+
+<div class="text-center mt-4">
+    <small class="text-muted"><i class="bi bi-info-circle me-1"></i> Toca la tarjeta para ver la respuesta</small>
+</div>
+{% endblock %}
